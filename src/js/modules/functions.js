@@ -19,7 +19,9 @@ export function isWebp() {
 
 // Получение списка каталога
 export async function getData() {
-  const response = await fetch("http://localhost:3001/products?_limit=20");
+  const response = await fetch(
+    "http://localhost:3002/products?_page=1_limit=20"
+  );
   const data = await response.json();
   return data;
 }
@@ -53,9 +55,12 @@ async function createCatalogTable(data) {
   const elementList = document.getElementById("table-data");
   elementList.innerHTML = "";
 
-  if (data.length === 0) {
-    document.getElementById("more").style.display = "none";
-  }
+  addCatalogTable(data);
+}
+
+// Функция, которая добавляет новые элементы в таблицу
+async function addCatalogTable(data) {
+  const elementList = document.getElementById("table-data");
 
   data.forEach((item) => {
     // Создаём строку таблицы
@@ -138,8 +143,6 @@ async function createCatalogTable(data) {
     )} <span class="table__span-label">₽</span>`;
     tableRow.append(price);
   });
-
-  hiddenBlock();
 }
 
 // Функция, которая получает максимальные и минимальные значения для фильтрации
@@ -326,8 +329,8 @@ function startRange(filters) {
   });
 }
 
-// Функция, которая фильтрует элементы по всем параметрам
-async function mainFilter() {
+// Функция, которая собирает данные для фильтрации
+export function getFilterData() {
   const container = document.getElementById("formRooms");
   const rooms = container.querySelectorAll(".form__room-input:checked");
 
@@ -337,17 +340,13 @@ async function mainFilter() {
   const maxSquare = +document.querySelector("#squareTo").value;
 
   let searchParams = new URLSearchParams({
+    _page: 1,
+    _limit: 20,
     price_gte: minPrice,
     price_lte: maxPrice,
     square_gte: minSquare,
     square_lte: maxSquare,
   });
-
-  const response = await fetch(
-    `http://localhost:3001/products?${searchParams}`
-  );
-
-  const data = await response.json();
 
   if (rooms.length > 0) {
     let ariaLabels = [];
@@ -358,49 +357,62 @@ async function mainFilter() {
     ariaLabels.forEach((item) => {
       searchParams.append("rooms", item);
     });
-
-    const response = await fetch(
-      `http://localhost:3001/products?${searchParams}`
-    );
-
-    const data = await response.json();
-
-    createCatalogTable(data);
-  } else {
-    createCatalogTable(data);
   }
+
+  return searchParams;
+}
+
+// Функция, которая фильтрует элементы по всем параметрам
+async function mainFilter() {
+  let params = getFilterData();
+  let searchParams = new URLSearchParams(params);
+
+  const response = await fetch(
+    `http://localhost:3002/products?${searchParams}`
+  );
+
+  const data = await response.json();
+  createCatalogTable(data);
 }
 
 // Функция, которая блокирует форму и производит фильтрацию при изменении полей формы
 function changeForm() {
   document.getElementById("form").style.pointerEvents = "none";
+  document.getElementById("more").style.display = "block";
   mainFilter();
   setTimeout(() => {
     document.getElementById("form").style.pointerEvents = "auto";
   }, 1000);
 }
 
-// Функция, которая создает скрытые блоки
-function hiddenBlock() {
-  let allRows = document.querySelectorAll('[aria-label="row"]');
-
-  for (let i = 20; i < allRows.length; i++) {
-    allRows[i].classList.add("table-row--hidden");
-  }
-}
-
 // Поведение кнопки "Показать ещё"
-function showMore() {
+async function showMore() {
+  // Получаем текущие параметры фильтра
+  let params = getFilterData();
+  let searchParams = new URLSearchParams(params);
+
+  const response = await fetch("http://localhost:3002/products");
+  const data = await response.json(),
+    limit = 20;
+  const dataValue = data.length;
+
+  let showPerClick = 2;
+
   const btn = document.getElementById("more");
 
-  btn.addEventListener("click", function () {
-    let showPerClick = 20;
+  btn.addEventListener("click", async function () {
+    searchParams.set("_page", showPerClick++);
+    let dataShow = showPerClick * limit;
 
-    let hidden = document.querySelectorAll(".table-row--hidden");
-    for (var i = 0; i < showPerClick; i++) {
-      if (!hidden[i]) return (btn.style.display = "none");
+    const response = await fetch(
+      `http://localhost:3002/products?${searchParams}`
+    );
+    const data = await response.json();
 
-      hidden[i].classList.remove("table-row--hidden");
+    addCatalogTable(data);
+
+    if (dataShow > dataValue) {
+      btn.style.display = "none";
     }
   });
 }

@@ -8,7 +8,7 @@
     "dev": "gulp",
     "build": "gulp build --build",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "server": "json-server -w server/data.json -p 3001"
+    "server": "json-server -w server/data.json -p 3002"
   },
   "author": "Darya Gornova",
   "license": "ISC",
