@@ -1,5 +1,7 @@
 import noUiSlider from "nouislider";
 
+const URL = "http://localhost:3002/products";
+
 // Форматирование картинок в WebP
 export function isWebp() {
   function testWebP(callback) {
@@ -17,17 +19,8 @@ export function isWebp() {
   });
 }
 
-// Получение списка каталога
-export async function getData() {
-  const response = await fetch(
-    "http://localhost:3002/products?_page=1_limit=20"
-  );
-  const data = await response.json();
-  return data;
-}
-
-// Построение DOM дерева
-export async function createDOM() {
+// Функция, запускающая приложение
+export async function createApp() {
   const data = await getData();
 
   createCatalogTable(data);
@@ -50,8 +43,16 @@ export async function createDOM() {
   showMore();
 }
 
+//
+// Получение списка каталога
+async function getData() {
+  const response = await fetch(`${URL}?_page=1_limit=20`);
+  const data = await response.json();
+  return data;
+}
+
 // Функция, которая заносит элементы каталога в таблицу
-async function createCatalogTable(data) {
+function createCatalogTable(data) {
   const elementList = document.getElementById("table-data");
   elementList.innerHTML = "";
 
@@ -59,7 +60,7 @@ async function createCatalogTable(data) {
 }
 
 // Функция, которая добавляет новые элементы в таблицу
-async function addCatalogTable(data) {
+function addCatalogTable(data) {
   const elementList = document.getElementById("table-data");
 
   data.forEach((item) => {
@@ -190,7 +191,7 @@ function createRoomsFilter(rooms) {
 }
 
 // Функция, которая создает контейнер для фильтра с ползунками
-async function createRangeFilter(minmax) {
+function createRangeFilter(minmax) {
   const container = document.getElementById("range");
 
   const filters = [
@@ -330,7 +331,7 @@ function startRange(filters) {
 }
 
 // Функция, которая собирает данные для фильтрации
-export function getFilterData() {
+function getFilterData() {
   const container = document.getElementById("formRooms");
   const rooms = container.querySelectorAll(".form__room-input:checked");
 
@@ -367,9 +368,7 @@ async function mainFilter() {
   let params = getFilterData();
   let searchParams = new URLSearchParams(params);
 
-  const response = await fetch(
-    `http://localhost:3002/products?${searchParams}`
-  );
+  const response = await fetch(`${URL}?${searchParams}`);
 
   const data = await response.json();
   createCatalogTable(data);
@@ -391,22 +390,18 @@ async function showMore() {
   let params = getFilterData();
   let searchParams = new URLSearchParams(params);
 
-  const response = await fetch("http://localhost:3002/products");
+  const response = await fetch(URL);
   const data = await response.json(),
     limit = 20;
-  const dataValue = data.length;
-
-  let showPerClick = 2;
-
-  const btn = document.getElementById("more");
+  let page = 2;
+  const dataValue = data.length,
+    btn = document.getElementById("more");
 
   btn.addEventListener("click", async function () {
-    searchParams.set("_page", showPerClick++);
-    let dataShow = showPerClick * limit;
+    searchParams.set("_page", page++);
+    let dataShow = page * limit;
 
-    const response = await fetch(
-      `http://localhost:3002/products?${searchParams}`
-    );
+    const response = await fetch(`${URL}?${searchParams}`);
     const data = await response.json();
 
     addCatalogTable(data);
