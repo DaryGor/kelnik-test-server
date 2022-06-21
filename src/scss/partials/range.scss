@@ -1,0 +1,41 @@
+.noUi {
+  &-target {
+    height: 14px;
+    background-color: transparent;
+    border: none;
+    box-shadow: none;
+  }
+
+  &-base {
+    position: absolute;
+    background: linear-gradient(
+        0deg,
+        rgba(11, 23, 57, 0.1),
+        rgba(11, 23, 57, 0.1)
+      ),
+      rgb(100%, 0%, 0%, 0.01);
+    height: 3px;
+    top: 5.5px;
+    border-radius: 1.5px;
+  }
+
+  &-connect {
+    background-color: $green;
+  }
+
+  &-handle {
+    width: 14px !important;
+    height: 14px !important;
+    right: -10px !important;
+    border: none !important;
+    border-radius: 100% !important;
+    background-color: $green;
+    box-shadow: none;
+    cursor: pointer;
+
+    &::before,
+    &::after {
+      display: none;
+    }
+  }
+}

@@ -1,0 +1,23 @@
+@mixin title {
+  font-style: normal;
+  font-weight: 700;
+  font-size: 54px;
+  line-height: 55px;
+}
+
+@mixin form-text {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+
+  @media (min-width: 960px) and (max-width: 1440px) {
+    font-size: 13px;
+    line-height: 18px;
+  }
+}
+
+@mixin table-headding {
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 20px;
+}

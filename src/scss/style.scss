@@ -1,0 +1,19 @@
+// download these files first
+@import "./global/fonts";
+@import "./global/variables";
+@import "./global/common";
+
+// libs
+@import "./lib/normalize";
+@import "./lib/nouislider";
+
+// settings and general styles
+@import "./global/mixins";
+
+// partials
+@import "./partials/form";
+@import "./partials/range";
+
+// sections
+@import "./sections/catalog";
+@import "./sections/table";

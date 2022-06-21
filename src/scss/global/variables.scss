@@ -1,0 +1,16 @@
+// fonts
+$base-font-size: 16px;
+$base-font-fam: PT-Root-UI, sans-serif;
+
+// colors
+$black: #000;
+$white: #fff;
+$main-font: #0b1739;
+$green: #3eb57c;
+$green-light: #95d0a1;
+$green-linear: linear-gradient(
+  135deg,
+  rgba(174, 228, 178, 0.3) 0%,
+  rgba(149, 208, 161, 0.3) 100%
+);
+$dark-linear: linear-gradient(0deg, #0b1739, #0b1739), #ff0000;
